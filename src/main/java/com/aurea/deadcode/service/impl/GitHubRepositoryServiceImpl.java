@@ -20,7 +20,6 @@ import java.util.List;
  */
 @Slf4j
 @Service
-@Transactional
 public class GitHubRepositoryServiceImpl implements GitHubRepositoryService {
 
     private final GitHubRepositoryRepository gitHubRepositoryRepository;
@@ -57,6 +56,7 @@ public class GitHubRepositoryServiceImpl implements GitHubRepositoryService {
     }
 
     @Override
+    @Transactional
     public GitHubRepository lockForProcessing(Long id) {
         GitHubRepository repo = gitHubRepositoryRepository.lock(id);
         if (repo.getStatus() == Status.PROCESSING) {
@@ -71,11 +71,13 @@ public class GitHubRepositoryServiceImpl implements GitHubRepositoryService {
     }
 
     @Override
+    @Transactional
     public Long save(GitHubRepository repo) {
         return gitHubRepositoryRepository.save(repo).getId();
     }
 
     @Override
+    @Transactional
     public void delete(GitHubRepository repo) {
         occurrenceService.deleteByRepositoryId(repo.getId());
         gitHubRepositoryRepository.delete(repo);

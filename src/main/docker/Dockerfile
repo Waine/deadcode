@@ -1,20 +1,15 @@
-FROM ubuntu:16.10
+FROM ubuntu
 
 # Install Java 8
 RUN apt-get update
-RUN apt-get install software-properties-common -y
-RUN add-apt-repository ppa:webupd8team/java -y
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository -y ppa:webupd8team/java
 RUN apt-get update
-RUN echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
-RUN apt-get install oracle-java8-installer -y --force-yes
-RUN apt-get install oracle-java8-set-default
-
-#Install aws cli
-RUN apt-get install awscli -y
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+RUN apt-get install -y oracle-java8-installer
 
 #Configure env
 RUN mkdir app
 COPY server-0.0.1-SNAPSHOT.jar /app/server.jar
-COPY temp /app/temp
 
 ENTRYPOINT [ "sh", "-c", "java -jar /app/server.jar" ]

@@ -29,7 +29,6 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Service
-@Transactional
 public class OccurrenceServiceImpl implements OccurrenceService {
 
     private static final JexlEngine JEXL_ENGINE = new JexlBuilder().create();
@@ -59,6 +58,7 @@ public class OccurrenceServiceImpl implements OccurrenceService {
     }
 
     @Override
+    @Transactional
     public Page<Occurrence> getByRepositoryId(Long repositoryId, Integer limit, Integer page, String filter) throws MalformedExpressionException {
         List<PageLabel> labels = pageLabelRepository.findByRepositoryIdAndExpressionAndLimitOrderByPage(repositoryId, filter, limit);
         Map<Integer, PageLabel> labelMap = new HashMap<>();
@@ -177,12 +177,14 @@ public class OccurrenceServiceImpl implements OccurrenceService {
     }
 
     @Override
+    @Transactional
     public void deleteByRepositoryId(Long repositoryId) {
         pageLabelRepository.deleteByRepositoryId(repositoryId);
         occurrenceRepository.deleteByRepositoryId(repositoryId);
     }
 
     @Override
+    @Transactional
     public void saveBatch(List<Occurrence> occurrences) {
         occurrenceRepository.save(occurrences);
     }
