@@ -1,6 +1,6 @@
 package com.aurea.deadcode.controller;
 
-import com.aurea.deadcode.model.DeadCodeOccurrence;
+import com.aurea.deadcode.model.Occurrence;
 import com.aurea.deadcode.model.GitHubRepository;
 import com.aurea.deadcode.model.Operation;
 import io.swagger.annotations.*;
@@ -83,12 +83,12 @@ public interface GitHubRepositoryController {
             @ApiImplicitParam(name = "filter", value = "Filter", dataType = "String", paramType = "query")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = DeadCodeOccurrence.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "Success", response = Occurrence.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Bad Request"),
             @ApiResponse(code = 404, message = "Not Found")
     })
     @RequestMapping(method = RequestMethod.GET, path = "/{id}/unused_code/", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<DeadCodeOccurrence> list(
+    List<Occurrence> list(
             @PathVariable Long id,
             @RequestParam(value = "limit", required = false) Integer limit,
             @RequestParam(value = "page", required = false) Integer page,

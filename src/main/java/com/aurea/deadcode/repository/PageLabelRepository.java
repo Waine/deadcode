@@ -15,8 +15,6 @@ public interface PageLabelRepository extends JpaRepository<PageLabel, Long> {
 
     List<PageLabel> findByRepositoryIdAndExpressionAndLimitOrderByPage(Long repositoryId, String expression, Integer limit);
 
-    @Modifying
-    @Query("DELETE FROM PageLabel l WHERE l.repositoryId = :repositoryId")
-    void deleteByRepositoryId(@Param("repositoryId") Long repositoryId);
+    void deleteByRepositoryId(Long repositoryId);
 
 }

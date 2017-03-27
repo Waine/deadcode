@@ -138,8 +138,8 @@ public class GitHubRepositoryControllerImpl implements GitHubRepositoryControlle
     }
 
     @Override
-    public List<DeadCodeOccurrence> list(@PathVariable Long id, Integer limit, Integer page, String filter,
-                                         HttpServletRequest request, HttpServletResponse response) {
+    public List<Occurrence> list(@PathVariable Long id, Integer limit, Integer page, String filter,
+                                 HttpServletRequest request, HttpServletResponse response) {
 
         log.info("List dead code occurrences for repo id = " + id);
         GitHubRepository repo = gitHubRepositoryService.getById(id);
@@ -156,7 +156,7 @@ public class GitHubRepositoryControllerImpl implements GitHubRepositoryControlle
             page--;
         }
 
-        Page<DeadCodeOccurrence> p;
+        Page<Occurrence> p;
         if (filter == null || filter.trim().length() == 0) {
             p = occurrenceService.getByRepositoryId(id, limit, page);
         } else {
@@ -192,7 +192,7 @@ public class GitHubRepositoryControllerImpl implements GitHubRepositoryControlle
 
         response.setHeader("Link", sb.toString());
 
-        List<DeadCodeOccurrence> result = new ArrayList<>();
+        List<Occurrence> result = new ArrayList<>();
         p.forEach(result::add);
 
         return result;

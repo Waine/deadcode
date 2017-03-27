@@ -1,7 +1,7 @@
 package com.aurea.deadcode.service;
 
 import com.aurea.deadcode.exception.MalformedExpressionException;
-import com.aurea.deadcode.model.DeadCodeOccurrence;
+import com.aurea.deadcode.model.Occurrence;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -11,14 +11,14 @@ import java.util.List;
  */
 public interface OccurrenceService {
 
-    List<DeadCodeOccurrence> getByRepositoryId(Long repositoryId);
+    List<Occurrence> getByRepositoryId(Long repositoryId);
 
-    Page<DeadCodeOccurrence> getByRepositoryId(Long repositoryId, Integer limit, Integer page);
+    Page<Occurrence> getByRepositoryId(Long repositoryId, Integer limit, Integer page);
 
-    Page<DeadCodeOccurrence> getByRepositoryId(Long repositoryId, Integer limit, Integer page, String filter) throws MalformedExpressionException;
+    Page<Occurrence> getByRepositoryId(Long repositoryId, Integer limit, Integer page, String filter) throws MalformedExpressionException;
 
     void deleteByRepositoryId(Long repositoryId);
 
-    void saveBatch(List<DeadCodeOccurrence> occurrences);
+    void saveBatch(List<Occurrence> occurrences);
 
 }

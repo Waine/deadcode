@@ -1,6 +1,6 @@
 package com.aurea.deadcode.controller.impl;
 
-import com.aurea.deadcode.model.DeadCodeOccurrence;
+import com.aurea.deadcode.model.Occurrence;
 import com.aurea.deadcode.model.GitHubRepository;
 import com.aurea.deadcode.model.Language;
 import com.aurea.deadcode.model.Status;
@@ -64,11 +64,11 @@ public class GitHubRepositoryControllerImplTest {
         assertNotNull(repo.getCreated());
         assertNotNull(repo.getUpdated());
 
-        List<DeadCodeOccurrence> batch = new ArrayList<>();
-        batch.add(new DeadCodeOccurrence());
+        List<Occurrence> batch = new ArrayList<>();
+        batch.add(new Occurrence());
         batch.get(0).setName("name1");
         batch.get(0).setRepository(repo);
-        batch.add(new DeadCodeOccurrence());
+        batch.add(new Occurrence());
         batch.get(1).setName("name2");
         batch.get(1).setRepository(repo);
         occurrenceService.saveBatch(batch);

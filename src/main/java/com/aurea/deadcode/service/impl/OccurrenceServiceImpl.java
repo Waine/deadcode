@@ -1,9 +1,10 @@
 package com.aurea.deadcode.service.impl;
 
 import com.aurea.deadcode.exception.MalformedExpressionException;
-import com.aurea.deadcode.model.DeadCodeOccurrence;
+import com.aurea.deadcode.model.Antipattern;
+import com.aurea.deadcode.model.Occurrence;
 import com.aurea.deadcode.model.PageLabel;
-import com.aurea.deadcode.repository.DeadCodeOccurrenceRepository;
+import com.aurea.deadcode.repository.OccurrenceRepository;
 import com.aurea.deadcode.repository.PageLabelRepository;
 import com.aurea.deadcode.service.OccurrenceService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,37 +29,37 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Service
+@Transactional
 public class OccurrenceServiceImpl implements OccurrenceService {
 
     private static final JexlEngine JEXL_ENGINE = new JexlBuilder().create();
 
-    private final DeadCodeOccurrenceRepository deadCodeOccurrenceRepository;
+    private final OccurrenceRepository occurrenceRepository;
     private final PageLabelRepository pageLabelRepository;
 
     @Value("${occurrence.limit}")
     private Integer limit = 50;
 
     @Autowired
-    public OccurrenceServiceImpl(DeadCodeOccurrenceRepository deadCodeOccurrenceRepository,
+    public OccurrenceServiceImpl(OccurrenceRepository occurrenceRepository,
                                  PageLabelRepository pageLabelRepository) {
 
-        this.deadCodeOccurrenceRepository = deadCodeOccurrenceRepository;
+        this.occurrenceRepository = occurrenceRepository;
         this.pageLabelRepository = pageLabelRepository;
     }
 
     @Override
-    public List<DeadCodeOccurrence> getByRepositoryId(Long repositoryId) {
-        return deadCodeOccurrenceRepository.findByRepositoryId(repositoryId);
+    public List<Occurrence> getByRepositoryId(Long repositoryId) {
+        return occurrenceRepository.findByRepositoryIdAndAntipattern(repositoryId, Antipattern.DEAD_CODE);
     }
 
     @Override
-    public Page<DeadCodeOccurrence> getByRepositoryId(Long repositoryId, Integer limit, Integer page) {
-        return deadCodeOccurrenceRepository.findPagedByRepositoryId(repositoryId, new PageRequest(page, limit));
+    public Page<Occurrence> getByRepositoryId(Long repositoryId, Integer limit, Integer page) {
+        return occurrenceRepository.findByRepositoryIdAndAntipatternOrderById(repositoryId, Antipattern.DEAD_CODE, new PageRequest(page, limit));
     }
 
     @Override
-    @Transactional
-    public Page<DeadCodeOccurrence> getByRepositoryId(Long repositoryId, Integer limit, Integer page, String filter) throws MalformedExpressionException {
+    public Page<Occurrence> getByRepositoryId(Long repositoryId, Integer limit, Integer page, String filter) throws MalformedExpressionException {
         List<PageLabel> labels = pageLabelRepository.findByRepositoryIdAndExpressionAndLimitOrderByPage(repositoryId, filter, limit);
         Map<Integer, PageLabel> labelMap = new HashMap<>();
         labels.forEach(l -> labelMap.put(l.getPage(), l));
@@ -72,10 +73,11 @@ public class OccurrenceServiceImpl implements OccurrenceService {
             }
         }
 
-        Stream<DeadCodeOccurrence> occurrences = deadCodeOccurrenceRepository.findStreamedByRepositoryId(repositoryId,
+        Stream<Occurrence> occurrences = occurrenceRepository.findByRepositoryIdAndAntipattern(repositoryId,
+                Antipattern.DEAD_CODE,
                 pageLabel != null ? pageLabel.getOccurrenceId() : 0);
 
-        final List<DeadCodeOccurrence> result = new ArrayList<>();
+        final List<Occurrence> result = new ArrayList<>();
 
         log.info("Apply filter = " + filter);
         StopWatch timer = new StopWatch();
@@ -132,7 +134,7 @@ public class OccurrenceServiceImpl implements OccurrenceService {
 
         boolean exceeds = result.size() > limit;
         if (exceeds) {
-            DeadCodeOccurrence o = result.remove(result.size() - 1);
+            Occurrence o = result.remove(result.size() - 1);
             if(labelMap.get(page + 1) == null) {
                 labels.add(new PageLabel(repositoryId, filter, limit, page + 1, o.getId()));
             }
@@ -146,7 +148,7 @@ public class OccurrenceServiceImpl implements OccurrenceService {
 
         pageLabelRepository.save(labels);
 
-        return new PageImpl<DeadCodeOccurrence>(result) {
+        return new PageImpl<Occurrence>(result) {
             @Override
             public boolean hasNext() {
                 return result.size() == limit;
@@ -175,16 +177,14 @@ public class OccurrenceServiceImpl implements OccurrenceService {
     }
 
     @Override
-    @Transactional
     public void deleteByRepositoryId(Long repositoryId) {
         pageLabelRepository.deleteByRepositoryId(repositoryId);
-        deadCodeOccurrenceRepository.deleteByRepositoryId(repositoryId);
+        occurrenceRepository.deleteByRepositoryId(repositoryId);
     }
 
     @Override
-    @Transactional
-    public void saveBatch(List<DeadCodeOccurrence> occurrences) {
-        deadCodeOccurrenceRepository.save(occurrences);
+    public void saveBatch(List<Occurrence> occurrences) {
+        occurrenceRepository.save(occurrences);
     }
 
 }

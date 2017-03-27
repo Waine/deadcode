@@ -1,6 +1,6 @@
 package com.aurea.deadcode.task;
 
-import com.aurea.deadcode.model.DeadCodeOccurrence;
+import com.aurea.deadcode.model.Occurrence;
 import com.aurea.deadcode.model.GitHubRepository;
 import com.scitools.understand.Entity;
 import com.scitools.understand.Reference;
@@ -14,12 +14,12 @@ import java.util.List;
  */
 public class Converter {
 
-    public static List<DeadCodeOccurrence> convert(List<Entity> entities, GitHubRepository repo, String repositoryPath) {
+    public static List<Occurrence> convert(List<Entity> entities, GitHubRepository repo, String repositoryPath) {
         String repoPath = new File(repositoryPath + "/" + repo.getId() + "/repository").getAbsolutePath();
 
-        List<DeadCodeOccurrence> result = new ArrayList<>();
+        List<Occurrence> result = new ArrayList<>();
         for (Entity e : entities) {
-            DeadCodeOccurrence o = new DeadCodeOccurrence();
+            Occurrence o = new Occurrence();
             o.setName(e.name());
             o.setLongName(e.longname(true));
             o.setType(e.type());

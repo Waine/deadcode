@@ -1,6 +1,6 @@
 package com.aurea.deadcode.jexl;
 
-import com.aurea.deadcode.model.DeadCodeOccurrence;
+import com.aurea.deadcode.model.Occurrence;
 import org.apache.commons.jexl3.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class TestExpression {
         JexlEngine jexl = new JexlBuilder().create();
         JexlExpression e = jexl.createExpression(expr);
 
-        DeadCodeOccurrence o = new DeadCodeOccurrence();
+        Occurrence o = new Occurrence();
         o.setName("name1");
         o.setKind("kind1");
 
@@ -38,7 +38,7 @@ public class TestExpression {
         JexlEngine jexl = new JexlBuilder().create();
         JexlExpression e = jexl.createExpression(expr);
 
-        DeadCodeOccurrence o = new DeadCodeOccurrence();
+        Occurrence o = new Occurrence();
         o.setName("name1_");
         o.setKind("kind1_");
 
@@ -58,7 +58,7 @@ public class TestExpression {
         JexlEngine jexl = new JexlBuilder().create();
         JexlExpression e = jexl.createExpression(expr);
 
-        DeadCodeOccurrence o = new DeadCodeOccurrence();
+        Occurrence o = new Occurrence();
         o.setName("name1_");
         o.setKind("kind1_");
 

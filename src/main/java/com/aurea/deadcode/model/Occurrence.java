@@ -9,15 +9,18 @@ import javax.persistence.*;
 /**
  * Created by ekonovalov on 10.03.2017.
  */
-@ApiModel(value = "DeadCodeOccurrence", description = "Occurrence of dead code")
+@ApiModel(value = "Occurrence", description = "Occurrence of dead code")
 @Data
 @Entity
-@Table(name = "DEAD_CODE_OCCURRENCE")
-public class DeadCodeOccurrence {
+@Table(name = "OCCURRENCE")
+public class Occurrence {
 
     @Id
     @GeneratedValue()
     private Long id;
+
+    @Column(nullable = false)
+    private Antipattern antipattern = Antipattern.DEAD_CODE;
 
     @Column(nullable = false)
     private String name;

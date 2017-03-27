@@ -49,11 +49,11 @@ public class ServiceImplTest {
         assertNotNull(repo.getCreated());
         assertNotNull(repo.getUpdated());
 
-        List<DeadCodeOccurrence> batch = new ArrayList<>();
-        batch.add(new DeadCodeOccurrence());
+        List<Occurrence> batch = new ArrayList<>();
+        batch.add(new Occurrence());
         batch.get(0).setName("name1");
         batch.get(0).setRepository(repo);
-        batch.add(new DeadCodeOccurrence());
+        batch.add(new Occurrence());
         batch.get(1).setName("name2");
         batch.get(1).setRepository(repo);
         occurrenceService.saveBatch(batch);
@@ -118,7 +118,7 @@ public class ServiceImplTest {
     public void getAllByRepositoryId() throws Exception {
         List<GitHubRepository> repos = gitHubRepositoryService.getAll();
         Long id = repos.get(0).getId();
-        List<DeadCodeOccurrence> occurrencies = occurrenceService.getByRepositoryId(id);
+        List<Occurrence> occurrencies = occurrenceService.getByRepositoryId(id);
         assertTrue(occurrencies.size() > 0);
     }
 
@@ -127,9 +127,9 @@ public class ServiceImplTest {
         List<GitHubRepository> repos = gitHubRepositoryService.getAll();
         Long id = repos.get(0).getId();
         GitHubRepository repo = gitHubRepositoryService.getById(id);
-        List<DeadCodeOccurrence> batch = new ArrayList<>();
+        List<Occurrence> batch = new ArrayList<>();
         for (int i = 0; i < 72; i++) {
-            DeadCodeOccurrence o = new DeadCodeOccurrence();
+            Occurrence o = new Occurrence();
             o.setName("name" + i);
             o.setRepository(repo);
             batch.add(o);
@@ -138,7 +138,7 @@ public class ServiceImplTest {
 
         assertEquals(74, occurrenceService.getByRepositoryId(id).size());
 
-        Page<DeadCodeOccurrence> page = occurrenceService.getByRepositoryId(id, 25, 0);
+        Page<Occurrence> page = occurrenceService.getByRepositoryId(id, 25, 0);
         assertEquals(25, page.getNumberOfElements());
         assertEquals(74, page.getTotalElements());
         assertEquals(3, page.getTotalPages());
@@ -163,9 +163,9 @@ public class ServiceImplTest {
         List<GitHubRepository> repos = gitHubRepositoryService.getAll();
         Long id = repos.get(0).getId();
         GitHubRepository repo = gitHubRepositoryService.getById(id);
-        List<DeadCodeOccurrence> batch = new ArrayList<>();
+        List<Occurrence> batch = new ArrayList<>();
         for (int i = 0; i < 74; i++) {
-            DeadCodeOccurrence o = new DeadCodeOccurrence();
+            Occurrence o = new Occurrence();
             o.setName("filter" + i);
             o.setRepository(repo);
             batch.add(o);
@@ -174,7 +174,7 @@ public class ServiceImplTest {
 
         assertEquals(76, occurrenceService.getByRepositoryId(id).size());
 
-        Page<DeadCodeOccurrence> page = occurrenceService.getByRepositoryId(id, 25, 0, "name.contains(\"filter\")");
+        Page<Occurrence> page = occurrenceService.getByRepositoryId(id, 25, 0, "name.contains(\"filter\")");
         assertEquals(25, page.getNumberOfElements());
         assertEquals(-1, page.getTotalElements());
         assertEquals(-1, page.getTotalPages());
@@ -199,9 +199,9 @@ public class ServiceImplTest {
         List<GitHubRepository> repos = gitHubRepositoryService.getAll();
         Long id = repos.get(0).getId();
         GitHubRepository repo = gitHubRepositoryService.getById(id);
-        List<DeadCodeOccurrence> batch = new ArrayList<>();
+        List<Occurrence> batch = new ArrayList<>();
         for (int i = 0; i < 70; i++) {
-            DeadCodeOccurrence o = new DeadCodeOccurrence();
+            Occurrence o = new Occurrence();
             o.setName("filter" + i);
             o.setRepository(repo);
             batch.add(o);
@@ -210,7 +210,7 @@ public class ServiceImplTest {
 
         assertEquals(72, occurrenceService.getByRepositoryId(id).size());
 
-        Page<DeadCodeOccurrence> page = occurrenceService.getByRepositoryId(id, 20, 2, "name.contains(\"filter\")");
+        Page<Occurrence> page = occurrenceService.getByRepositoryId(id, 20, 2, "name.contains(\"filter\")");
         assertEquals(20, page.getNumberOfElements());
         assertEquals(-1, page.getTotalElements());
         assertEquals(-1, page.getTotalPages());
@@ -226,7 +226,7 @@ public class ServiceImplTest {
     public void deleteByRepositoryId() throws Exception {
         List<GitHubRepository> repos = gitHubRepositoryService.getAll();
         Long id = repos.get(0).getId();
-        List<DeadCodeOccurrence> occurrencies = occurrenceService.getByRepositoryId(id);
+        List<Occurrence> occurrencies = occurrenceService.getByRepositoryId(id);
         assertTrue(occurrencies.size() > 0);
         occurrenceService.deleteByRepositoryId(id);
         occurrencies = occurrenceService.getByRepositoryId(id);
