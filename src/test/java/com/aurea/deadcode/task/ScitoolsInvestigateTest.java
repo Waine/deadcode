@@ -4,6 +4,7 @@ import com.aurea.deadcode.model.scitools.Entity;
 import com.scitools.understand.Database;
 import com.scitools.understand.Understand;
 import com.scitools.understand.UnderstandException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -21,6 +22,7 @@ public class ScitoolsInvestigateTest {
             "Throw", "Throwby"};
 
     @Test
+    @Ignore
     public void test() {
         Database db;
         try {

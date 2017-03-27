@@ -4,6 +4,7 @@ import com.aurea.deadcode.model.GitHubRepository;
 import com.aurea.deadcode.model.Language;
 import com.aurea.deadcode.service.GitHubRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -33,6 +34,7 @@ public class DeadCodeTaskTest {
     private OccurrenceService occurrenceService;
 
     @Test
+    @Ignore
     public void find() throws Exception {
         DeadCodeTask task = new DeadCodeTask(gitHubRepositoryService, occurrenceService);
         File rootRepositoryPath = temp.getRoot();
