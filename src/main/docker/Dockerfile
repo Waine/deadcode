@@ -12,18 +12,9 @@ RUN apt-get install oracle-java8-set-default
 #Install aws cli
 RUN apt-get install awscli -y
 
-#Install Scitools Understand
-COPY lib /usr/lib/x86_64-linux-gnu
-COPY scitools /usr/bin/scitools
-COPY scitools/bin/linux64/python/understand.so /usr/bin
-ENV PATH="/usr/bin/scitools/bin/linux64:${PATH}"
-ENV PYTHONPATH=/usr/bin/scitools/bin/linux64/python
-
 #Configure env
 RUN mkdir app
 COPY server-0.0.1-SNAPSHOT.jar /app/server.jar
-COPY python /app/python
-RUN ln /usr/bin/python3.5 /usr/bin/python
 COPY temp /app/temp
 
 ENTRYPOINT [ "sh", "-c", "java -jar /app/server.jar" ]
