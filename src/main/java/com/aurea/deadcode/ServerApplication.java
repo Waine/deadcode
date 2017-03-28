@@ -40,7 +40,7 @@ public class ServerApplication {
         return new ApiInfoBuilder()
                 .title("Dead Code Service")
                 .description("Dead Code Service is intended to help to find dead code occurrences in GitHub repositories")
-                .contact(new Contact("Evgeny Konovalov", "https://github.com/Waine/deadcode", "eakonovalov@gmail.com"))
+                .contact(new Contact("Evgeny Konovalov", "https://github.com/eakonovalov/deadcode", "eakonovalov@gmail.com"))
                 .license("Free")
                 .version("0.0.1")
                 .build();

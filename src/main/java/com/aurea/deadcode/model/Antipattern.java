@@ -1,7 +1,7 @@
 package com.aurea.deadcode.model;
 
 /**
- * Created by Waine on 27.03.2017.
+ * Created by ekonovalov on 27.03.2017.
  */
 public enum Antipattern {
 
