@@ -1,11 +1,11 @@
 package com.aurea.deadcode.controller.impl;
 
-import com.aurea.deadcode.controller.GitHubRepositoryController;
+import com.aurea.deadcode.controller.GitRepositoryController;
 import com.aurea.deadcode.exception.MalformedExpressionException;
 import com.aurea.deadcode.model.*;
-import com.aurea.deadcode.service.GitHubRepositoryService;
+import com.aurea.deadcode.service.GitRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
-import com.aurea.deadcode.task.GitHubTask;
+import com.aurea.deadcode.task.GitTask;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +25,24 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-public class GitHubRepositoryControllerImpl implements GitHubRepositoryController {
+public class GitRepositoryControllerImpl implements GitRepositoryController {
 
-    private final GitHubRepositoryService gitHubRepositoryService;
+    private final GitRepositoryService gitRepositoryService;
     private final OccurrenceService occurrenceService;
-    private final GitHubTask gitHubTask;
+    private final GitTask gitTask;
 
     @Value("${occurrence.limit}")
     private Integer limit = 50;
 
     @Autowired
-    public GitHubRepositoryControllerImpl(GitHubRepositoryService gitHubRepositoryService, OccurrenceService occurrenceService, GitHubTask gitHubTask) {
-        this.gitHubRepositoryService = gitHubRepositoryService;
+    public GitRepositoryControllerImpl(GitRepositoryService gitRepositoryService, OccurrenceService occurrenceService, GitTask gitTask) {
+        this.gitRepositoryService = gitRepositoryService;
         this.occurrenceService = occurrenceService;
-        this.gitHubTask = gitHubTask;
+        this.gitTask = gitTask;
     }
 
     @Override
-    public GitHubRepository add(@RequestBody GitHubRepository repo, HttpServletResponse response) {
+    public GitRepository add(@RequestBody GitRepository repo, HttpServletResponse response) {
         if (!UrlValidator.getInstance().isValid(repo.getUrl())) {
             badRequest("Malformed URL: " + repo.getUrl(), response);
             return null;
@@ -50,15 +50,15 @@ public class GitHubRepositoryControllerImpl implements GitHubRepositoryControlle
 
         repo.setUrl(repo.getUrl().trim().toLowerCase());
 
-        if (gitHubRepositoryService.getByUrl(repo.getUrl()) == null) {
+        if (gitRepositoryService.getByUrl(repo.getUrl()) == null) {
             log.info("Create new repo");
-            Long id = gitHubRepositoryService.save(repo);
+            Long id = gitRepositoryService.save(repo);
             log.info("Repository saved with id = " + id);
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            gitHubTask.cloneRepository(id);
+            gitTask.cloneRepository(id);
         } else {
             log.info("Repo is found url = " + repo.getUrl() + ", id = " + repo.getId());
-            repo = gitHubRepositoryService.getByUrl(repo.getUrl());
+            repo = gitRepositoryService.getByUrl(repo.getUrl());
         }
 
         if (repo.getStatus() == Status.NEW || repo.getStatus() == Status.PROCESSING) {
@@ -72,9 +72,9 @@ public class GitHubRepositoryControllerImpl implements GitHubRepositoryControlle
     }
 
     @Override
-    public GitHubRepository update(@PathVariable Long id, @RequestBody Operation operation, HttpServletResponse response) {
+    public GitRepository update(@PathVariable Long id, @RequestBody Operation operation, HttpServletResponse response) {
         log.info("Update repo id = " + id);
-        GitHubRepository repo = gitHubRepositoryService.getById(id);
+        GitRepository repo = gitRepositoryService.getById(id);
         if (repo == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return null;
@@ -89,7 +89,7 @@ public class GitHubRepositoryControllerImpl implements GitHubRepositoryControlle
         }
         if (Operation.PULL.equals(operation.getName())) {
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            gitHubTask.pullRepository(id);
+            gitTask.pullRepository(id);
         } else {
             response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
         }
@@ -98,26 +98,26 @@ public class GitHubRepositoryControllerImpl implements GitHubRepositoryControlle
     }
 
     @Override
-    public GitHubRepository get(@PathVariable Long id, HttpServletResponse response) {
+    public GitRepository get(@PathVariable Long id, HttpServletResponse response) {
         log.info("Get repo id = " + id);
-        GitHubRepository repo = gitHubRepositoryService.getById(id);
+        GitRepository repo = gitRepositoryService.getById(id);
         if (repo == null) {
             log.info("Repo not found id = " + id);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
-        return gitHubRepositoryService.getById(id);
+        return gitRepositoryService.getById(id);
     }
 
     @Override
-    public List<GitHubRepository> list() {
+    public List<GitRepository> list() {
         log.info("List repos");
-        return gitHubRepositoryService.getAll();
+        return gitRepositoryService.getAll();
     }
 
     @Override
     public String delete(@PathVariable Long id, HttpServletResponse response) {
         log.info("Delete repo id = " + id);
-        GitHubRepository repo = gitHubRepositoryService.getById(id);
+        GitRepository repo = gitRepositoryService.getById(id);
         if (repo == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return "";
@@ -132,7 +132,7 @@ public class GitHubRepositoryControllerImpl implements GitHubRepositoryControlle
         }
 
         response.setStatus(HttpServletResponse.SC_ACCEPTED);
-        gitHubTask.deleteRepository(id);
+        gitTask.deleteRepository(id);
 
         return "";
     }
@@ -142,7 +142,7 @@ public class GitHubRepositoryControllerImpl implements GitHubRepositoryControlle
                                  HttpServletRequest request, HttpServletResponse response) {
 
         log.info("List dead code occurrences for repo id = " + id);
-        GitHubRepository repo = gitHubRepositoryService.getById(id);
+        GitRepository repo = gitRepositoryService.getById(id);
         if (repo == null) {
             log.info("Repo not found id = " + id);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);

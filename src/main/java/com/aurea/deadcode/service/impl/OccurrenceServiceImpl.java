@@ -73,7 +73,8 @@ public class OccurrenceServiceImpl implements OccurrenceService {
             }
         }
 
-        Stream<Occurrence> occurrences = occurrenceRepository.findByRepositoryIdAndAntipattern(repositoryId,
+        Stream<Occurrence> occurrences = occurrenceRepository.findByRepositoryIdAndAntipatternAndIdGreaterThanEqualOrderById(
+                repositoryId,
                 Antipattern.DEAD_CODE,
                 pageLabel != null ? pageLabel.getOccurrenceId() : 0);
 

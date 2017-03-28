@@ -1,10 +1,10 @@
 package com.aurea.deadcode.task;
 
-import com.aurea.deadcode.model.GitHubRepository;
+import com.aurea.deadcode.model.GitRepository;
 import com.aurea.deadcode.model.Language;
 import com.aurea.deadcode.model.Status;
 import com.aurea.deadcode.model.Task;
-import com.aurea.deadcode.service.GitHubRepositoryService;
+import com.aurea.deadcode.service.GitRepositoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,24 +22,24 @@ import java.util.stream.Collectors;
 @Component
 public class ScitoolsTask {
 
-    private final GitHubRepositoryService gitHubRepositoryService;
+    private final GitRepositoryService gitRepositoryService;
     private final DeadCodeTask deadCodeTask;
 
     @Value("${repository.path}")
     private String repositoryPath;
 
     @Autowired
-    public ScitoolsTask(GitHubRepositoryService gitHubRepositoryService, DeadCodeTask deadCodeTask) {
-        this.gitHubRepositoryService = gitHubRepositoryService;
+    public ScitoolsTask(GitRepositoryService gitRepositoryService, DeadCodeTask deadCodeTask) {
+        this.gitRepositoryService = gitRepositoryService;
         this.deadCodeTask = deadCodeTask;
     }
 
     @Async
-    public void createDatabase(GitHubRepository repo) {
+    public void createDatabase(GitRepository repo) {
         log.info("Start create database id = " + repo.getId());
 
         repo.setTask(Task.FILL);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
         try {
             File db = new File(repositoryPath + "/" + repo.getId() + "/db.udb");
             if (db.exists()) {
@@ -71,7 +71,7 @@ public class ScitoolsTask {
         log.info("Files added id = " + repo.getId());
 
         repo.setTask(Task.ANALYZE);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
 
         try {
             runAnalyzer(repo);
@@ -84,7 +84,7 @@ public class ScitoolsTask {
         deadCodeTask.find(repo);
     }
 
-    private void setLanguage(GitHubRepository repo) throws IOException {
+    private void setLanguage(GitRepository repo) throws IOException {
         String output = Utils.runCommand(new File(repositoryPath + "/" + repo.getId()),
                 "und settings -Languages " +
                         repo.getLanguages().stream().map(Language::toString).collect(Collectors.joining(" "))
@@ -92,21 +92,21 @@ public class ScitoolsTask {
         log.debug(output);
     }
 
-    private void addFiles(GitHubRepository repo) throws IOException {
+    private void addFiles(GitRepository repo) throws IOException {
         String output = Utils.runCommand(new File(repositoryPath + "/" + repo.getId()),
                 "und -db db.udb add \"" + repo.getPath() + "\"");
         log.debug(output);
     }
 
-    private void runAnalyzer(GitHubRepository repo) throws IOException {
+    private void runAnalyzer(GitRepository repo) throws IOException {
         String output = Utils.runCommand(new File(repositoryPath + "/" + repo.getId()),
                 "und analyze db.udb");
         log.debug(output);
     }
 
-    private void logError(GitHubRepository repo, String error, Exception e) {
+    private void logError(GitRepository repo, String error, Exception e) {
         repo.setStatus(Status.FAILED);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
         log.error(error + " repoId = " + repo.getId(), e);
     }
 

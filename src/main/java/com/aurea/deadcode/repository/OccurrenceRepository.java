@@ -22,10 +22,7 @@ public interface OccurrenceRepository extends JpaRepository<Occurrence, Long> {
 
     Page<Occurrence> findByRepositoryIdAndAntipatternOrderById(Long repositoryId, Antipattern antipattern, Pageable pageable);
 
-    @Query("FROM Occurrence o WHERE o.repository.id = :repositoryId AND o.antipattern = :antipattern AND o.id >= :startId ORDER BY id")
-    Stream<Occurrence> findByRepositoryIdAndAntipattern(@Param("repositoryId") Long repositoryId,
-                                                        @Param("antipattern") Antipattern antipattern,
-                                                        @Param("startId") Long startId);
+    Stream<Occurrence> findByRepositoryIdAndAntipatternAndIdGreaterThanEqualOrderById(Long repositoryId, Antipattern antipattern, Long id);
 
     void deleteByRepositoryId(Long repositoryId);
 

@@ -2,7 +2,7 @@ package com.aurea.deadcode.service.impl;
 
 import com.aurea.deadcode.model.*;
 import com.aurea.deadcode.repository.PageLabelRepository;
-import com.aurea.deadcode.service.GitHubRepositoryService;
+import com.aurea.deadcode.service.GitRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
 import org.junit.After;
 import org.junit.Before;
@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
 public class ServiceImplTest {
 
     @Autowired
-    private GitHubRepositoryService gitHubRepositoryService;
+    private GitRepositoryService gitRepositoryService;
     @Autowired
     private OccurrenceService occurrenceService;
 
@@ -37,12 +37,12 @@ public class ServiceImplTest {
 
     @Before
     public void before() {
-        GitHubRepository repo = new GitHubRepository();
+        GitRepository repo = new GitRepository();
         repo.setUrl("url");
         repo.getLanguages().add(Language.Java);
-        Long id = gitHubRepositoryService.save(repo);
+        Long id = gitRepositoryService.save(repo);
         assertNotNull(id);
-        repo = gitHubRepositoryService.getById(id);
+        repo = gitRepositoryService.getById(id);
         assertNotNull(repo);
         assertEquals("url", repo.getUrl());
         assertEquals(Status.NEW, repo.getStatus());
@@ -61,62 +61,62 @@ public class ServiceImplTest {
 
     @After
     public void after() {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
-        for (GitHubRepository repo : repos) {
+        List<GitRepository> repos = gitRepositoryService.getAll();
+        for (GitRepository repo : repos) {
             occurrenceService.deleteByRepositoryId(repo.getId());
-            gitHubRepositoryService.delete(repo);
+            gitRepositoryService.delete(repo);
         }
     }
 
     @Test
     public void getById() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         Long id = repos.get(0).getId();
-        GitHubRepository repo = gitHubRepositoryService.getById(id);
+        GitRepository repo = gitRepositoryService.getById(id);
         assertNotNull(repo);
     }
 
     @Test
     public void getByUrl() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         String url = repos.get(0).getUrl();
-        GitHubRepository repo = gitHubRepositoryService.getByUrl(url);
+        GitRepository repo = gitRepositoryService.getByUrl(url);
         assertNotNull(repo);
     }
 
     @Test
     public void save() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         Long id = repos.get(0).getId();
-        GitHubRepository repo = gitHubRepositoryService.getById(id);
+        GitRepository repo = gitRepositoryService.getById(id);
         assertEquals(Status.NEW, repo.getStatus());
         repo.setStatus(Status.PROCESSING);
-        gitHubRepositoryService.save(repo);
-        repo = gitHubRepositoryService.getById(id);
+        gitRepositoryService.save(repo);
+        repo = gitRepositoryService.getById(id);
         assertEquals(Status.PROCESSING, repo.getStatus());
     }
 
     @Test
     public void delete() throws Exception {
-        GitHubRepository repo = new GitHubRepository();
+        GitRepository repo = new GitRepository();
         repo.setUrl("url2");
         repo.getLanguages().add(Language.Java);
-        Long id = gitHubRepositoryService.save(repo);
+        Long id = gitRepositoryService.save(repo);
         assertNotNull(id);
-        gitHubRepositoryService.delete(repo);
-        repo = gitHubRepositoryService.getById(id);
+        gitRepositoryService.delete(repo);
+        repo = gitRepositoryService.getById(id);
         assertNull(repo);
     }
 
     @Test
     public void getAll() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         assertTrue(repos.size() > 0);
     }
 
     @Test
     public void getAllByRepositoryId() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         Long id = repos.get(0).getId();
         List<Occurrence> occurrencies = occurrenceService.getByRepositoryId(id);
         assertTrue(occurrencies.size() > 0);
@@ -124,9 +124,9 @@ public class ServiceImplTest {
 
     @Test
     public void getPagedByRepositoryId() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         Long id = repos.get(0).getId();
-        GitHubRepository repo = gitHubRepositoryService.getById(id);
+        GitRepository repo = gitRepositoryService.getById(id);
         List<Occurrence> batch = new ArrayList<>();
         for (int i = 0; i < 72; i++) {
             Occurrence o = new Occurrence();
@@ -160,9 +160,9 @@ public class ServiceImplTest {
 
     @Test
     public void getFilteredByRepositoryId() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         Long id = repos.get(0).getId();
-        GitHubRepository repo = gitHubRepositoryService.getById(id);
+        GitRepository repo = gitRepositoryService.getById(id);
         List<Occurrence> batch = new ArrayList<>();
         for (int i = 0; i < 74; i++) {
             Occurrence o = new Occurrence();
@@ -196,9 +196,9 @@ public class ServiceImplTest {
 
     @Test
     public void getFilteredByRepositoryIdThirdPage() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         Long id = repos.get(0).getId();
-        GitHubRepository repo = gitHubRepositoryService.getById(id);
+        GitRepository repo = gitRepositoryService.getById(id);
         List<Occurrence> batch = new ArrayList<>();
         for (int i = 0; i < 70; i++) {
             Occurrence o = new Occurrence();
@@ -224,7 +224,7 @@ public class ServiceImplTest {
 
     @Test
     public void deleteByRepositoryId() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         Long id = repos.get(0).getId();
         List<Occurrence> occurrencies = occurrenceService.getByRepositoryId(id);
         assertTrue(occurrencies.size() > 0);
@@ -232,7 +232,7 @@ public class ServiceImplTest {
         occurrencies = occurrenceService.getByRepositoryId(id);
         assertTrue(occurrencies.size() == 0);
 
-        gitHubRepositoryService.delete(gitHubRepositoryService.getById(id));
+        gitRepositoryService.delete(gitRepositoryService.getById(id));
     }
 
 }

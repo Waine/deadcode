@@ -1,9 +1,9 @@
 package com.aurea.deadcode.service.impl;
 
-import com.aurea.deadcode.model.GitHubRepository;
+import com.aurea.deadcode.model.GitRepository;
 import com.aurea.deadcode.model.Status;
-import com.aurea.deadcode.repository.GitHubRepositoryRepository;
-import com.aurea.deadcode.service.GitHubRepositoryService;
+import com.aurea.deadcode.repository.GitRepositoryRepository;
+import com.aurea.deadcode.service.GitRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,20 +20,20 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class GitHubRepositoryServiceImpl implements GitHubRepositoryService {
+public class GitRepositoryServiceImpl implements GitRepositoryService {
 
-    private final GitHubRepositoryRepository gitHubRepositoryRepository;
+    private final GitRepositoryRepository gitRepositoryRepository;
     private final OccurrenceService occurrenceService;
 
     private String pid;
     private String host;
 
     @Autowired
-    public GitHubRepositoryServiceImpl(
-            GitHubRepositoryRepository gitHubRepositoryRepository,
+    public GitRepositoryServiceImpl(
+            GitRepositoryRepository gitRepositoryRepository,
             OccurrenceService occurrenceService
     ) {
-        this.gitHubRepositoryRepository = gitHubRepositoryRepository;
+        this.gitRepositoryRepository = gitRepositoryRepository;
         this.occurrenceService = occurrenceService;
 
         pid = System.getProperty("PID");
@@ -46,46 +46,46 @@ public class GitHubRepositoryServiceImpl implements GitHubRepositoryService {
     }
 
     @Override
-    public GitHubRepository getById(Long id) {
-        return gitHubRepositoryRepository.findOne(id);
+    public GitRepository getById(Long id) {
+        return gitRepositoryRepository.findOne(id);
     }
 
     @Override
-    public GitHubRepository getByUrl(String url) {
-        return gitHubRepositoryRepository.findByUrl(url.trim().toLowerCase());
+    public GitRepository getByUrl(String url) {
+        return gitRepositoryRepository.findByUrl(url.trim().toLowerCase());
     }
 
     @Override
     @Transactional
-    public GitHubRepository lockForProcessing(Long id) {
-        GitHubRepository repo = gitHubRepositoryRepository.lock(id);
+    public GitRepository lockForProcessing(Long id) {
+        GitRepository repo = gitRepositoryRepository.findById(id);
         if (repo.getStatus() == Status.PROCESSING) {
-            throw new CannotAcquireLockException("Cannot lock repo id = " + id + ". Already in processing state.");
+            throw new CannotAcquireLockException("Cannot findById repo id = " + id + ". Already in processing state.");
         }
         repo.setStatus(Status.PROCESSING);
         repo.setHost(host);
         repo.setPid(pid);
-        gitHubRepositoryRepository.save(repo);
+        gitRepositoryRepository.save(repo);
 
         return repo;
     }
 
     @Override
     @Transactional
-    public Long save(GitHubRepository repo) {
-        return gitHubRepositoryRepository.save(repo).getId();
+    public Long save(GitRepository repo) {
+        return gitRepositoryRepository.save(repo).getId();
     }
 
     @Override
     @Transactional
-    public void delete(GitHubRepository repo) {
+    public void delete(GitRepository repo) {
         occurrenceService.deleteByRepositoryId(repo.getId());
-        gitHubRepositoryRepository.delete(repo);
+        gitRepositoryRepository.delete(repo);
     }
 
     @Override
-    public List<GitHubRepository> getAll() {
-        return gitHubRepositoryRepository.findAll();
+    public List<GitRepository> getAll() {
+        return gitRepositoryRepository.findAll();
     }
 
 }

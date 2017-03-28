@@ -1,10 +1,10 @@
 package com.aurea.deadcode.controller.impl;
 
+import com.aurea.deadcode.model.GitRepository;
 import com.aurea.deadcode.model.Occurrence;
-import com.aurea.deadcode.model.GitHubRepository;
 import com.aurea.deadcode.model.Language;
 import com.aurea.deadcode.model.Status;
-import com.aurea.deadcode.service.GitHubRepositoryService;
+import com.aurea.deadcode.service.GitRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
 import org.junit.After;
 import org.junit.Before;
@@ -38,13 +38,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ComponentScan(basePackages = {"com.aurea.deadcode"})
 @AutoConfigureDataJpa
 @TestPropertySource(locations = "classpath:test.properties")
-@WebMvcTest(controllers = GitHubRepositoryControllerImpl.class)
-public class GitHubRepositoryControllerImplTest {
+@WebMvcTest(controllers = GitRepositoryControllerImpl.class)
+public class GitRepositoryControllerImplTest {
 
     private static final String testUrl = "http://localhost:8080/";
 
     @Autowired
-    protected GitHubRepositoryService gitHubRepositoryService;
+    protected GitRepositoryService gitRepositoryService;
     @Autowired
     protected OccurrenceService occurrenceService;
     @Autowired
@@ -52,12 +52,12 @@ public class GitHubRepositoryControllerImplTest {
 
     @Before
     public void before() {
-        GitHubRepository repo = new GitHubRepository();
+        GitRepository repo = new GitRepository();
         repo.setUrl(testUrl);
         repo.getLanguages().add(Language.Java);
-        Long id = gitHubRepositoryService.save(repo);
+        Long id = gitRepositoryService.save(repo);
         assertNotNull(id);
-        repo = gitHubRepositoryService.getById(id);
+        repo = gitRepositoryService.getById(id);
         assertNotNull(repo);
         assertEquals(testUrl, repo.getUrl());
         assertEquals(Status.NEW, repo.getStatus());
@@ -76,10 +76,10 @@ public class GitHubRepositoryControllerImplTest {
 
     @After
     public void after() {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
-        for (GitHubRepository repo : repos) {
+        List<GitRepository> repos = gitRepositoryService.getAll();
+        for (GitRepository repo : repos) {
             occurrenceService.deleteByRepositoryId(repo.getId());
-            gitHubRepositoryService.delete(repo);
+            gitRepositoryService.delete(repo);
         }
     }
     @Test
@@ -94,7 +94,7 @@ public class GitHubRepositoryControllerImplTest {
     @Test
     @Ignore
     public void update() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         assertTrue(repos.size() > 0);
         String id = String.valueOf(repos.get(0).getId());
         this.mockMvc.perform(MockMvcRequestBuilders.patch("/repos/" + id).content("{\"name\":\"pull\"}"))
@@ -104,7 +104,7 @@ public class GitHubRepositoryControllerImplTest {
 
     @Test
     public void get() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         assertTrue(repos.size() > 0);
         String id = String.valueOf(repos.get(0).getId());
         this.mockMvc.perform(MockMvcRequestBuilders.get("/repos/" + id))
@@ -121,7 +121,7 @@ public class GitHubRepositoryControllerImplTest {
 
     @Test
     public void delete() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         assertTrue(repos.size() > 0);
         String id = String.valueOf(repos.get(0).getId());
         this.mockMvc.perform(MockMvcRequestBuilders.delete("/repos/" + id))
@@ -131,7 +131,7 @@ public class GitHubRepositoryControllerImplTest {
 
     @Test
     public void listDeadCode() throws Exception {
-        List<GitHubRepository> repos = gitHubRepositoryService.getAll();
+        List<GitRepository> repos = gitRepositoryService.getAll();
         assertTrue(repos.size() > 0);
         String id = String.valueOf(repos.get(0).getId());
         this.mockMvc.perform(MockMvcRequestBuilders.get("/repos/" + id + "/unused_code/"))

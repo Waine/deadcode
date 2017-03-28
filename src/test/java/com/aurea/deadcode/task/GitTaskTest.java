@@ -1,8 +1,8 @@
 package com.aurea.deadcode.task;
 
-import com.aurea.deadcode.model.GitHubRepository;
+import com.aurea.deadcode.model.GitRepository;
 import com.aurea.deadcode.model.Language;
-import com.aurea.deadcode.service.GitHubRepositoryService;
+import com.aurea.deadcode.service.GitRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,27 +24,27 @@ import static org.mockito.Mockito.mock;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations = "classpath:test.properties")
-public class GitHubTaskTest {
+public class GitTaskTest {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
     @Autowired
-    private GitHubRepositoryService gitHubRepositoryService;
+    private GitRepositoryService gitRepositoryService;
     @Autowired
     private OccurrenceService occurrenceService;
 
     @Test
     public void cloneRepository() throws Exception {
-        GitHubTask task = new GitHubTask(
-                gitHubRepositoryService,
+        GitTask task = new GitTask(
+                gitRepositoryService,
                 occurrenceService,
                 mock(ScitoolsTask.class)
         );
 
-        GitHubRepository repo = new GitHubRepository();
+        GitRepository repo = new GitRepository();
         repo.setUrl("https://github.com/waine/patterns.git");
         repo.getLanguages().add(Language.Java);
-        Long id = gitHubRepositoryService.save(repo);
+        Long id = gitRepositoryService.save(repo);
 
         File root = temp.getRoot();
         task.setRepositoryPath(temp.getRoot().getAbsolutePath());

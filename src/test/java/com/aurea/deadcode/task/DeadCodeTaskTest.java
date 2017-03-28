@@ -1,8 +1,8 @@
 package com.aurea.deadcode.task;
 
-import com.aurea.deadcode.model.GitHubRepository;
+import com.aurea.deadcode.model.GitRepository;
 import com.aurea.deadcode.model.Language;
-import com.aurea.deadcode.service.GitHubRepositoryService;
+import com.aurea.deadcode.service.GitRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -29,27 +29,27 @@ public class DeadCodeTaskTest {
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
     @Autowired
-    private GitHubRepositoryService gitHubRepositoryService;
+    private GitRepositoryService gitRepositoryService;
     @Autowired
     private OccurrenceService occurrenceService;
 
     @Test
     @Ignore
     public void find() throws Exception {
-        DeadCodeTask task = new DeadCodeTask(gitHubRepositoryService, occurrenceService);
+        DeadCodeTask task = new DeadCodeTask(gitRepositoryService, occurrenceService);
         File rootRepositoryPath = temp.getRoot();
         task.setRepositoryPath(rootRepositoryPath.getAbsolutePath());
         task.setTempPath(rootRepositoryPath.getAbsolutePath());
 
-        GitHubRepository repo = new GitHubRepository();
+        GitRepository repo = new GitRepository();
         repo.setUrl("url");
         repo.getLanguages().add(Language.Java);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
 
         File repositoryPath = new File(rootRepositoryPath + "/" + repo.getId());
         repositoryPath.mkdirs();
         repo.setPath(repositoryPath.getAbsolutePath());
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
         File db = new File(repo.getPath() + "/db.udb");
         db.createNewFile();
 

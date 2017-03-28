@@ -1,9 +1,9 @@
 package com.aurea.deadcode.task;
 
-import com.aurea.deadcode.model.GitHubRepository;
+import com.aurea.deadcode.model.GitRepository;
 import com.aurea.deadcode.model.Status;
 import com.aurea.deadcode.model.Task;
-import com.aurea.deadcode.service.GitHubRepositoryService;
+import com.aurea.deadcode.service.GitRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -24,9 +24,9 @@ import java.io.IOException;
  */
 @Slf4j
 @Component
-public class GitHubTask {
+public class GitTask {
 
-    private final GitHubRepositoryService gitHubRepositoryService;
+    private final GitRepositoryService gitRepositoryService;
     private final OccurrenceService occurrenceService;
     private final ScitoolsTask scitoolsTask;
 
@@ -34,11 +34,11 @@ public class GitHubTask {
     private String repositoryPath;
 
     @Autowired
-    public GitHubTask(GitHubRepositoryService gitHubRepositoryService,
-                      OccurrenceService occurrenceService,
-                      ScitoolsTask scitoolsTask) {
+    public GitTask(GitRepositoryService gitRepositoryService,
+                   OccurrenceService occurrenceService,
+                   ScitoolsTask scitoolsTask) {
 
-        this.gitHubRepositoryService = gitHubRepositoryService;
+        this.gitRepositoryService = gitRepositoryService;
         this.occurrenceService = occurrenceService;
         this.scitoolsTask = scitoolsTask;
     }
@@ -46,16 +46,16 @@ public class GitHubTask {
     @Async
     public void cloneRepository(Long id) {
         log.info("Start cloning repository id = " + id);
-        GitHubRepository repo;
+        GitRepository repo;
         try {
-            repo = gitHubRepositoryService.lockForProcessing(id);
+            repo = gitRepositoryService.lockForProcessing(id);
         } catch (CannotAcquireLockException e) {
-            log.info("Cannot acquire lock for repo id = " + id);
+            log.info("Cannot acquire findById for repo id = " + id);
             return;
         }
 
         repo.setTask(Task.CLONE);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
 
         File path = new File(repositoryPath + "/" + repo.getId() + "/repository");
         log.info("Repository path = " + path.getAbsolutePath());
@@ -78,7 +78,7 @@ public class GitHubTask {
         }
 
         repo.setPath(path.getAbsolutePath());
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
 
         log.info("Clone repository finished successfully id = " + repo.getId());
 
@@ -88,16 +88,16 @@ public class GitHubTask {
     @Async
     public void pullRepository(Long id) {
         log.info("Start pulling from the repository id = " + id);
-        GitHubRepository repo;
+        GitRepository repo;
         try {
-            repo = gitHubRepositoryService.lockForProcessing(id);
+            repo = gitRepositoryService.lockForProcessing(id);
         } catch (CannotAcquireLockException e) {
-            log.info("Cannot acquire lock for repo id = " + id);
+            log.info("Cannot acquire findById for repo id = " + id);
             return;
         }
 
         repo.setTask(Task.PULL);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
 
         occurrenceService.deleteByRepositoryId(repo.getId());
 
@@ -123,20 +123,20 @@ public class GitHubTask {
     @Async
     public void deleteRepository(Long id) {
         log.info("Start deleting repository id = " + id);
-        GitHubRepository repo;
+        GitRepository repo;
         try {
-            repo = gitHubRepositoryService.lockForProcessing(id);
+            repo = gitRepositoryService.lockForProcessing(id);
         } catch (CannotAcquireLockException e) {
-            log.info("Cannot acquire lock for repo id = " + id);
+            log.info("Cannot acquire findById for repo id = " + id);
             return;
         }
         repo.setTask(Task.DELETE);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
         try {
             File path = new File(repositoryPath + "/" + repo.getId());
             log.debug("Repository path = " + path.getAbsolutePath());
             FileUtils.deleteDirectory(path);
-            gitHubRepositoryService.delete(repo);
+            gitRepositoryService.delete(repo);
         } catch (IOException e) {
             logError(repo, "Cannot delete repository", e);
             return;
@@ -148,9 +148,9 @@ public class GitHubTask {
         log.info("Repository deleted successfully id = " + repo.getId());
     }
 
-    private void logError(GitHubRepository repo, String error, Exception e) {
+    private void logError(GitRepository repo, String error, Exception e) {
         repo.setStatus(Status.FAILED);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
         log.error(error + " repoId = " + repo.getId(), e);
     }
 

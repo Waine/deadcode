@@ -46,6 +46,6 @@ public class Occurrence {
     @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "repository_id")
-    private GitHubRepository repository;
+    private GitRepository repository;
 
 }

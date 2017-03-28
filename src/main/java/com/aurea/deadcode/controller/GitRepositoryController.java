@@ -1,7 +1,7 @@
 package com.aurea.deadcode.controller;
 
+import com.aurea.deadcode.model.GitRepository;
 import com.aurea.deadcode.model.Occurrence;
-import com.aurea.deadcode.model.GitHubRepository;
 import com.aurea.deadcode.model.Operation;
 import io.swagger.annotations.*;
 import org.springframework.http.MediaType;
@@ -16,11 +16,11 @@ import java.util.List;
  */
 @Api(value = "/repos", description = "GitHub repositories", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequestMapping("/repos")
-public interface GitHubRepositoryController {
+public interface GitRepositoryController {
 
     @ApiOperation(value = "add", notes = "Available languages: Ada, Assembly, COBOL, Cpp, CSharp, Fortran, Java, Jovial, Pascal, Plm, Python, VHDL, Web")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "repo", value = "Repository", required = true, dataType = "GitHubRepository", paramType = "body"),
+            @ApiImplicitParam(name = "repo", value = "Repository", required = true, dataType = "GitRepository", paramType = "body"),
     })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Created"),
@@ -29,7 +29,7 @@ public interface GitHubRepositoryController {
     })
     @ResponseHeader(name = "Location", description = "Repository resource location")
     @RequestMapping(method = RequestMethod.POST, path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    GitHubRepository add(@RequestBody GitHubRepository repo, HttpServletResponse response);
+    GitRepository add(@RequestBody GitRepository repo, HttpServletResponse response);
 
     @ApiOperation(value = "update", notes = "Available operations: pull")
     @ApiImplicitParams({
@@ -43,25 +43,25 @@ public interface GitHubRepositoryController {
             @ApiResponse(code = 501, message = "Not Implemented"),
     })
     @RequestMapping(method = RequestMethod.PATCH, path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    GitHubRepository update(@PathVariable Long id, @RequestBody Operation operation, HttpServletResponse response);
+    GitRepository update(@PathVariable Long id, @RequestBody Operation operation, HttpServletResponse response);
 
     @ApiOperation(value = "get")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "Repository ID", required = true, dataType = "long", paramType = "path")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = GitHubRepository.class),
+            @ApiResponse(code = 200, message = "Success", response = GitRepository.class),
             @ApiResponse(code = 404, message = "Not Found")
     })
     @RequestMapping(method = RequestMethod.GET, path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    GitHubRepository get(@PathVariable Long id, HttpServletResponse response);
+    GitRepository get(@PathVariable Long id, HttpServletResponse response);
 
     @ApiOperation(value = "list")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = GitHubRepository.class, responseContainer = "List")
+            @ApiResponse(code = 200, message = "Success", response = GitRepository.class, responseContainer = "List")
     })
     @RequestMapping(method = RequestMethod.GET, path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<GitHubRepository> list();
+    List<GitRepository> list();
 
     @ApiOperation(value = "delete")
     @ApiImplicitParams({

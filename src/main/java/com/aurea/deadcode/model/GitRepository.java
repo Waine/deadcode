@@ -13,13 +13,13 @@ import java.util.List;
 /**
  * Created by ekonovalov on 08.03.2017.
  */
-@ApiModel(value = "GitHubRepository", description = "GitHub repository")
+@ApiModel(value = "GitRepository", description = "GitHub repository")
 @Data
 @Entity
 @Table(name = "REPOSITORY", indexes = {
         @Index(columnList = "url", name = "idx_url")
 })
-public class GitHubRepository {
+public class GitRepository {
 
     @ApiModelProperty(hidden = true)
     @Id

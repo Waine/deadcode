@@ -1,9 +1,9 @@
 package com.aurea.deadcode.task;
 
-import com.aurea.deadcode.model.GitHubRepository;
+import com.aurea.deadcode.model.GitRepository;
 import com.aurea.deadcode.model.Status;
 import com.aurea.deadcode.model.Task;
-import com.aurea.deadcode.service.GitHubRepositoryService;
+import com.aurea.deadcode.service.GitRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
 import com.aurea.deadcode.task.algo.DeadCode;
 import com.scitools.understand.Database;
@@ -26,7 +26,7 @@ import java.util.Date;
 @Component
 public class DeadCodeTask {
 
-    private final GitHubRepositoryService gitHubRepositoryService;
+    private final GitRepositoryService gitRepositoryService;
     private final OccurrenceService occurrenceService;
 
     @Value("${repository.path}")
@@ -36,19 +36,19 @@ public class DeadCodeTask {
     private String tempPath;
 
     @Autowired
-    public DeadCodeTask(GitHubRepositoryService gitHubRepositoryService,
+    public DeadCodeTask(GitRepositoryService gitRepositoryService,
                         OccurrenceService occurrenceService) {
 
-        this.gitHubRepositoryService = gitHubRepositoryService;
+        this.gitRepositoryService = gitRepositoryService;
         this.occurrenceService = occurrenceService;
     }
 
     @Async("findDeadCodeTaskExecutor")
-    public void find(GitHubRepository repo) {
+    public void find(GitRepository repo) {
         log.info("Find dead code occurrencies id = " + repo.getId());
 
         repo.setTask(Task.FIND);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
 
         File tempDb;
         try {
@@ -84,14 +84,14 @@ public class DeadCodeTask {
         repo.setStatus(Status.COMPLETED);
         repo.setTask(null);
         repo.setUpdated(new Date());
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
 
         log.info("Find dead code occurrencies completed successfully id = " + repo.getId());
     }
 
-    private void logError(GitHubRepository repo, String error, Exception e) {
+    private void logError(GitRepository repo, String error, Exception e) {
         repo.setStatus(Status.FAILED);
-        gitHubRepositoryService.save(repo);
+        gitRepositoryService.save(repo);
         log.error(error + " repoId = " + repo.getId(), e);
     }
 
