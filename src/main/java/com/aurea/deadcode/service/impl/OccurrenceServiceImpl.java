@@ -64,11 +64,10 @@ public class OccurrenceServiceImpl implements OccurrenceService {
         Map<Integer, PageLabel> labelMap = new HashMap<>();
         labels.forEach(l -> labelMap.put(l.getPage(), l));
         PageLabel pageLabel = null;
-        for(PageLabel l : labels) {
-            if(l.getPage() <= page) {
+        for (PageLabel l : labels) {
+            if (l.getPage() <= page) {
                 pageLabel = l;
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -109,12 +108,11 @@ public class OccurrenceServiceImpl implements OccurrenceService {
                     variables[1]++;
                     if (variables[1] > variables[0]) {
                         result.add(o);
-                    }
-                    else {
+                    } else {
                         variables[2]++;
                         if (variables[2] > limit) {
                             Integer p = variables[1] / limit;
-                            if(labelMap.get(p) == null) {
+                            if (labelMap.get(p) == null) {
                                 labels.add(new PageLabel(repositoryId, filter, limit, variables[1] / limit, o.getId()));
                             }
                             variables[2] = 0;
@@ -129,18 +127,17 @@ public class OccurrenceServiceImpl implements OccurrenceService {
         timer.stop();
         log.info("Apply filter execution time = " + timer.getTotalTimeMillis() + " ms.");
 
-        if(labelMap.get(page) == null) {
+        if (labelMap.get(page) == null) {
             labels.add(new PageLabel(repositoryId, filter, limit, page, result.get(0).getId()));
         }
 
         boolean exceeds = result.size() > limit;
         if (exceeds) {
             Occurrence o = result.remove(result.size() - 1);
-            if(labelMap.get(page + 1) == null) {
+            if (labelMap.get(page + 1) == null) {
                 labels.add(new PageLabel(repositoryId, filter, limit, page + 1, o.getId()));
             }
-        }
-        else {
+        } else {
             labels.forEach(l -> {
                 l.setTotalPages(labels.size());
                 l.setTotalElements((labels.size() - 1) * limit + result.size());

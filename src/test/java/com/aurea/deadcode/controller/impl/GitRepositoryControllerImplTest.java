@@ -1,8 +1,8 @@
 package com.aurea.deadcode.controller.impl;
 
 import com.aurea.deadcode.model.GitRepository;
-import com.aurea.deadcode.model.Occurrence;
 import com.aurea.deadcode.model.Language;
+import com.aurea.deadcode.model.Occurrence;
 import com.aurea.deadcode.model.Status;
 import com.aurea.deadcode.service.GitRepositoryService;
 import com.aurea.deadcode.service.OccurrenceService;
@@ -24,9 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,6 +80,7 @@ public class GitRepositoryControllerImplTest {
             gitRepositoryService.delete(repo);
         }
     }
+
     @Test
     @Ignore
     public void add() throws Exception {
